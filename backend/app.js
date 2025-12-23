@@ -1,9 +1,10 @@
 const express = require("express");
 const session = require("express-session");
 const cors = require("cors");
+const connectDB = require("./db");
 const path = require("path");
 
-const connectDB = require("./db");
+
 const authRoutes = require("./routes/auth");
 const expenseRoutes = require("./routes/expenses");
 const adminRoutes = require("./routes/admin");
@@ -12,54 +13,48 @@ connectDB();
 
 const app = express();
 
-/* ===================== MIDDLEWARE ===================== */
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-// ✅ Allow all origins (safe for your use case)
 app.use(cors({
-  origin: true,
+  origin: [
+    "http://localhost:5500",
+    "http://127.0.0.1:5500"
+  ],
   credentials: true
 }));
 
+app.use(express.json());
+
 app.use(session({
-  name: "ded.sid",
+  name:"ded.sid",
   secret: "daily-expenses-secret",
   resave: false,
   saveUninitialized: false,
-  cookie: {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: false   // keep false (Render handles HTTPS)
+  cookie:{
+    httpOnly:true,
+    sameSite:"lax",
+    secure:false
   }
 }));
-
-/* ===================== API ROUTES ===================== */
 
 app.use("/api/auth", authRoutes);
 app.use("/api/expenses", expenseRoutes);
 app.use("/api/admin", adminRoutes);
+app.use(express.static(path.join(__dirname,"../")))
 
-/* ===================== FRONTEND ===================== */
-
-// Serve all frontend files from ROOT folder
-app.use(express.static(path.join(__dirname, "..")));
-
-// Default page
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "../index.html"));
+  res.send("Backend is running");
 });
 
-// Catch-all (important for single-link setup)
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../index.html"));
-});
-
-/* ===================== SERVER ===================== */
+app.get('/',(req,res)=>{
+  res.sendFile(path.join(__dirname,"../login.html"))
+})
 
 const PORT = process.env.PORT || 4000;
 
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log("🚀 Server running on port", PORT);
 });
+
+// app.listen(4000, () => {
+//   console.log("🚀 Server running on http://localhost:4000");
+// });
