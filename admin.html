@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Daily Expenses</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="index.css">
+  <style>
+    .admin-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .admin-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 1.5rem;
+    }
+
+    .user-table-container {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      color: var(--text-color);
+    }
+
+    th,
+    td {
+      text-align: left;
+      padding: 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    th {
+      background: rgba(0, 0, 0, 0.2);
+      font-weight: 600;
+    }
+
+    tr:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .badge {
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+
+    .badge-admin {
+      background: rgba(255, 107, 107, 0.2);
+      color: #ff6b6b;
+    }
+
+    .badge-user {
+      background: rgba(78, 205, 196, 0.2);
+      color: #4ecdc4;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="admin-container">
+    <div class="admin-header">
+      <div>
+        <h1>Admin Dashboard</h1>
+        <p style="color: var(--text-secondary)">Manage users and view platform statistics</p>
+      </div>
+      <div style="display: flex; gap: 1rem;">
+        <a href="index.html" class="btn btn-outline">
+          <i class="fas fa-home"></i> App Home
+        </a>
+        <div class="user-info" onclick="admin.openProfileModal()" title="View Profile"
+          style="cursor: pointer; display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.1); padding: 8px 16px; border-radius: 20px;">
+          <i class="fas fa-user-shield"></i>
+          <span>Admin Profile</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin Profile Modal -->
+    <div class="modal" id="profileModal"
+      style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+      <div class="modal-content"
+        style="background: #1e1e1e; padding: 2rem; border-radius: 12px; width: 90%; max-width: 400px; color: white; position: relative;">
+        <div style="text-align: center; margin-bottom: 20px;">
+          <i class="fas fa-user-shield" style="font-size: 4rem; color: #e74c3c;"></i>
+        </div>
+        <h3 style="text-align: center; margin-bottom: 1rem;">Admin Profile</h3>
+
+        <div class="profile-details"
+          style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+          <div style="margin-bottom: 10px; display: flex; justify-content: space-between;">
+            <strong>Name:</strong> <span id="adminName">Loading...</span>
+          </div>
+          <div style="margin-bottom: 10px; display: flex; justify-content: space-between;">
+            <strong>Email:</strong> <span id="adminEmail">Loading...</span>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <strong>Role:</strong> <span style="text-transform: capitalize; color: #e74c3c;">Master Admin</span>
+          </div>
+        </div>
+
+        <div class="modal-actions" style="display: flex; flex-direction: column; gap: 10px;">
+          <button class="btn btn-secondary" onclick="admin.closeProfileModal()" style="width: 100%;">Close</button>
+          <button class="btn" onclick="admin.logout()" style="background: #e74c3c; color: white; width: 100%;">
+            <i class="fas fa-sign-out-alt"></i> Logout
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-stats">
+    <div class="stat-card">
+      <div class="stat-header">
+        <div class="stat-title">Total Users</div>
+        <div class="stat-icon" style="background: rgba(78, 205, 196, 0.2); color: #4ecdc4;"><i class="fas fa-users"></i>
+        </div>
+      </div>
+      <div class="stat-value" id="totalUsers">...</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-header">
+        <div class="stat-title">Total Platform Expenses</div>
+        <div class="stat-icon" style="background: rgba(255, 107, 107, 0.2); color: #ff6b6b;"><i
+            class="fas fa-money-bill-wave"></i></div>
+      </div>
+      <div class="stat-value" id="totalExpenses">...</div>
+    </div>
+  </div>
+
+  <!-- Danger Zone -->
+  <div
+    style="margin-bottom: 2rem; padding: 1.5rem; border: 1px solid rgba(231, 76, 60, 0.3); border-radius: 12px; background: rgba(231, 76, 60, 0.05);">
+    <h3 style="color: #e74c3c; margin-bottom: 10px;"><i class="fas fa-exclamation-triangle"></i> Danger Zone</h3>
+    <p style="color: var(--text-secondary); margin-bottom: 1rem;">These actions are irreversible. Proceed with
+      caution.</p>
+    <button onclick="admin.systemReset()" class="btn" style="background: #e74c3c; color: white;">
+      <i class="fas fa-bomb"></i> Reset Entire System (Delete All Users & Data)
+    </button>
+  </div>
+
+  <h2 class="section-title">Registered Users</h2>
+  <div class="user-table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Joined Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="userTableBody">
+        <!-- Users will be populated here -->
+      </tbody>
+    </table>
+  </div>
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+
+</html>

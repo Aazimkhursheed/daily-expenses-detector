@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Daily Expenses Detector</title>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="login-style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Google Sign-In API -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <!-- Header -->
+            <div class="login-header">
+                <div class="app-logo">
+                    <i class="fas fa-wallet"></i>
+                    <h1>Daily Expenses Detector</h1>
+                </div>
+                <p class="welcome-text">Welcome back! Please sign in to your account</p>
+            </div>
+
+            <!-- Login Methods Toggle -->
+            <div class="login-methods">
+                <button class="method-btn active" data-method="email">
+                    <i class="fas fa-envelope"></i> Email
+                </button>
+                <button class="method-btn" data-method="phone">
+                    <i class="fas fa-phone"></i> Phone
+                </button>
+            </div>
+
+            <!-- Google Login Section -->
+            <!-- Email Login Section -->
+            <div class="login-section active" id="emailLogin">
+                <form class="login-form" id="emailForm">
+                    <div class="form-group">
+                        <label for="email">
+                            <i class="fas fa-envelope"></i>
+                            Email Address
+                        </label>
+                        <input type="email" id="email" name="email" required placeholder="Enter your email">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">
+                            <i class="fas fa-lock"></i>
+                            Password
+                        </label>
+                        <div class="password-container">
+                            <input type="password" id="password" name="password" required
+                                placeholder="Enter your password">
+                            <button type="button" class="password-toggle" id="passwordToggle">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-options">
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="rememberMe">
+                            <span class="checkmark"></span>
+                            Remember me
+                        </label>
+                        <a href="#" class="forgot-password">Forgot Password?</a>
+                    </div>
+
+                    <button type="button" class="login-btn" id="loginBtn">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Sign In
+                    </button>
+                </form>
+
+                <div class="signup-link">
+                    Don't have an account? <a href="register.html" id="signupLink">Register here</a>
+                </div>
+            </div>
+
+            <!-- Phone Login Section -->
+            <div class="login-section" id="phoneLogin">
+                <form class="login-form" id="phoneForm">
+                    <div class="phone-step" id="phoneStep">
+                        <div class="form-group">
+                            <label for="phoneNumber">
+                                <i class="fas fa-phone"></i>
+                                Phone Number
+                            </label>
+                            <div class="phone-input-container">
+                                <select class="country-code" id="countryCode">
+                                    <option value="+91">🇮🇳 +91</option>
+                                    <option value="+1">🇺🇸 +1</option>
+                                    <option value="+44">🇬🇧 +44</option>
+                                    <option value="+86">🇨🇳 +86</option>
+                                </select>
+                                <input type="tel" id="phoneNumber" name="phoneNumber" required
+                                    placeholder="Enter your phone number" pattern="[0-9]{10}">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="login-btn">
+                            <i class="fas fa-paper-plane"></i>
+                            Send OTP
+                        </button>
+                    </div>
+
+                    <div class="otp-step" id="otpStep" style="display: none;">
+                        <div class="form-group">
+                            <label for="otpCode">
+                                <i class="fas fa-key"></i>
+                                Enter OTP
+                            </label>
+                            <div class="otp-input-container">
+                                <input type="text" class="otp-digit" maxlength="1" pattern="[0-9]">
+                                <input type="text" class="otp-digit" maxlength="1" pattern="[0-9]">
+                                <input type="text" class="otp-digit" maxlength="1" pattern="[0-9]">
+                                <input type="text" class="otp-digit" maxlength="1" pattern="[0-9]">
+                                <input type="text" class="otp-digit" maxlength="1" pattern="[0-9]">
+                                <input type="text" class="otp-digit" maxlength="1" pattern="[0-9]">
+                            </div>
+                            <p class="otp-info">
+                                OTP sent to <span id="sentPhoneNumber"></span>
+                                <button type="button" class="resend-otp" id="resendOtp">Resend OTP</button>
+                            </p>
+                        </div>
+
+                        <button type="button" class="login-btn" id="verifyOtp">
+                            <i class="fas fa-check"></i>
+                            Verify OTP
+                        </button>
+
+                        <button type="button" class="back-btn" id="backToPhone">
+                            <i class="fas fa-arrow-left"></i>
+                            Back to Phone Number
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Loading Spinner -->
+            <div class="loading-spinner" id="loadingSpinner" style="display: none;">
+                <div class="spinner"></div>
+                <p>Signing you in...</p>
+            </div>
+
+            <!-- Error Message -->
+            <div class="error-message" id="errorMessage" style="display: none;">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span class="error-text"></span>
+            </div>
+
+            <!-- Success Message -->
+            <div class="success-message" id="successMessage" style="display: none;">
+                <i class="fas fa-check-circle"></i>
+                <span class="success-text"></span>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="login-footer">
+            <p>&copy; 2025 Daily Expenses Detector. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Help</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="api.js"></script>
+    <script src="login.js"></script>
+</body>
+
+</html>
